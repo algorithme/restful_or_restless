@@ -1,0 +1,638 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>RESTful or RESTless</title>
+
+		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+		<meta name="author" content="olivier morel">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/solarized.css" id="theme">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+					<h1>RESTful or RESTless</h1>
+					<h3>Javascript Romandie Meetup</h3>
+					<p>
+						<small>Created by olivier morel</a> / <a href="http://twitter.com/algorithme">@algorithme</a></small>
+					</p>
+				</section>
+
+				<section>
+					<h2>About me</h2>
+					<ul>
+						<li>Senior Software Engineer</li>
+						<li>Interested in Scala, Web, and Javascript</li>
+						<li><strong>I HATE MAGIC !!!</strong></li>
+						<li>Looking for a job</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>The Big Picture</h2>
+					<img src="https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fts4.mm.bing.net%2Fth%3Fid%3DHN.608054283143217955%26pid%3D15.1&f=1">
+				</section>
+
+				<section>
+					<h2>The Hidden Details</h2>
+					<img src="http://www.ebaytechblog.com/wp-content/uploads/2012/08/proxy_cache_topology-e1344357287142.png">
+				</section>
+
+				<section>
+					<h2>Identifying resources?</h2>
+					<ul>
+						<li class="fragment"><strong>Domain entities</strong> (photo, user, article, etc.)</li>
+						<li class="fragment"><strong>Collections</strong> (list of articles, address book, etc.)</li>
+						<li class="fragment"><strong>Composites</strong> (a user with its address book and following events, etc.)</li>
+						<li class="fragment"><strong>Computing/Processing</strong> (convert an image, calculate the area of a circle, etc.)</li>
+				</section>
+
+				<section>
+					<h2>Designing URI</h2>
+					<ul>
+						<li>Use domains &amp; subdomains:<br/>
+						 		<small>- http://mobile.example.net (client-type)<br/>
+								- http://fr.example.net (language)</small></li>
+						<li>Forward slash separator <strong>/</strong> </li>
+						<li>Underscore <strong>OR</strong> Hyphen<br/>
+							<small>- http://api.example.net/photo_book/spring_holidays/photo/dsn_265</small></li>
+						<li>Query separator with the Ampersand <strong>&amp;</strong><br/>
+							<small>- http://api.example.net/search?field=id&amp;name_start=a</small></li>
+						<li>Use %20 to represent spaces
+						<li>Be careful with capital letters, avoid them
+						<li>Check your framework support!!!</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Resource representation</h2>
+					<ul>
+						<li>representation consist of 2 parts: <strong>Header</strong>, <strong>Body</strong></li>
+						<li>avoid to create new headers, use the existing one, yours could be ignored by proxy, caches, etc.</li>
+						<li>use standards: dates, currency, languages, locales</li>
+						<li>consider your clients to select the best representations to implement (HTML, JSON for JS, XML for Java, etc.)</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Header</h2>
+					<ul>
+						<li>Content-Type: describe the type of the content (in requests too!)</li>
+						<li>Content-Length: size of body in bytes</li>
+						<li>Content-Language: language of the content</li>
+						<li>Content-MD5: md5 of the body</li>
+						<li>Content-Encoding: describe how the body was encoded (gzip, compress, deflate)</li>
+						<li>Last-Modified: the time the resource was modified</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Body</h2>
+					<ul>
+						<li>structured format: JSON, XML, etc.</li>
+						<li>plain text</li>
+						<li>binary: images, video, audio, etc.</li>
+						<li>multipart: ie. JSON + image (not nice with JS, so prefer to use 2 resources and link them)</li>
+					</ul>
+				</section>
+				<section>
+					<h2>HTTP Methods</h2>
+					<table>
+						<thead>
+							<tr>
+								<th>Method</th>
+								<th>Safe?</th>
+								<th>Idempotent?</th>
+								<th>Main usages</th>
+							</tr>
+						</thead>
+
+						<tbody>
+							<tr class="fragment">
+								<td><strong>GET</strong></td>
+								<td><span style="color: green">YES</span></td>
+								<td><span style="color: green">YES</span></td>
+								<td><small>retrieve a resource<small></td>
+							</tr>
+							<tr class="fragment">
+								<td><strong>HEAD</strong></td>
+								<td><span style="color: green">YES</span></td>
+								<td><span style="color: green">YES</span></td>
+								<td><small>retrieve a resource metadata only, check for existence</small></td>
+							</tr>
+							<tr class="fragment">
+								<td><strong>OPTIONS</strong></td>
+								<td><span style="color: green">YES</span></td>
+								<td><span style="color: green">YES</span></td>
+								<td><small>retrieve supported methods for a resource<small></td>
+							</tr>
+							<tr class="fragment">
+								<td><strong>PUT</strong></td>
+								<td><span style="color: red">NO</span></td>
+								<td><span style="color: green">YES</span></td>
+								<td><small>replace or create a resource</small></td>
+							</tr>
+							<tr class="fragment">
+								<td><strong>DELETE</strong></td>
+								<td><span style="color: red">NO</span></td>
+								<td><span style="color: green">YES</span></td>
+								<td><small>delete a resource</small></td>
+							</tr>
+							<tr class="fragment">
+								<td><strong>POST</strong></td>
+								<td><span style="color: red">NO</span></td>
+								<td><span style="color: red">NO</span></td>
+								<td><small>other actions</small></td>
+							</tr>
+						</tbody>
+					</table>
+				</section>
+
+				<section>
+					<h2>GET example</h2>
+					<pre><code># GET request for a simple resource
+GET /user/1 HTTP/1.1
+Host: api.example.net
+
+# No body
+
+
+# GET response
+HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+
+# Body
+{ "id": "urn:user:1",
+  "username": "algorithme",
+	"email": "olivier@example.net" }</code></pre>
+				</section>
+
+				<section>
+					<h2>HEAD example</h2>
+					<pre><code># HEAD request for a simple resource
+HEAD /article/1 HTTP/1.1
+Host: api.example.net
+
+# No body
+
+
+# HEAD response
+HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+Last-Modified: Sun, 29 Mar 2009 08:00:00 GMT
+
+# No body</code></pre>
+				</section>
+
+				<section>
+					<h2>PUT example (resource creation)</h2>
+					<pre><code># PUT request to create a new resource with resource identifier
+PUT /user/1/article/1 HTTP/1.1
+Host: api.example.net
+
+# Body
+{ "title": "My first article"
+  "body": "..." }
+
+
+# PUT response
+HTTP/1.1 201 Created
+Content-Type: application/json;charset=UTF-8
+Last-Modified: Sun, 29 Mar 2009 08:00:00 GMT
+
+# Body
+{ "id": "urn:user:1:article:1"
+  "title": "My first article"
+  "body": "..." }
+</code></pre>
+				</section>
+
+				<section>
+					<h2>PUT example (update completely)</h2>
+					<pre><code># PUT request to update a resource completely
+PUT /user/1/article/1 HTTP/1.1
+Host: api.example.net
+
+# Body
+{ "title": "My first article"
+  "body": "Ok I'll write some text" }
+
+
+# PUT response
+HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+Last-Modified: Sun, 29 Mar 2009 08:00:00 GMT
+
+# Body
+{ "id": "urn:user:1:article:1"
+  "title": "My first article"
+  "body": "Ok I'll write some text" }
+</code></pre>
+				</section>
+
+				<section>
+					<h2>DELETE example</h2>
+					<pre><code># DELETE request
+DELETE /user/1/article/1 HTTP/1.1
+Host: api.example.net
+
+# No Body
+
+# PUT response
+HTTP/1.1 204 No Content
+
+# No Body
+</code></pre>
+				</section>
+
+				<section>
+					<h2>POST example (resource creation)</h2>
+					<pre><code># POST request to create a new resource
+POST /user/1/task HTTP/1.1
+Host: api.example.net
+
+# Body
+{ "name": "prepare my slides"
+  "priority": 10 }
+
+# POST response
+HTTP/1.1 201 Created
+Location: http://api.example.net/user/1/task/1
+Content-Location: http://api.example.net/user/1/task/1
+Content-Type: application/json;charset=UTF-8
+
+{ "id": "urn:user:1:task:1"
+  "name": "prepare my slides"
+  "priority": 10 }
+</code></pre>
+				</section>
+
+				<section>
+					<h2>POST example (modify partial resource)</h2>
+					<pre><code># POST request to modify part of the resource
+POST /user/1/article/1/title HTTP/1.1
+Host: api.example.net
+
+# Body
+a new name
+
+
+# PUT response
+HTTP/1.1 303 See Other
+Location: http://api.example.net/user/1/article/1
+
+# No Body
+</code></pre>
+				</section>
+
+				<section>
+					<h2>Asynchronous tasks with POST</h2>
+					<pre><code># POST request to initiate the task
+POST /video/conversion/convert_to_mp4 HTTP/1.1
+Host: api.example.net
+Content-Type: application/json;charset=UTF-8
+
+# Body
+{ "src": "https://youtu.be/Kbwk2vwXNyU" }
+
+
+# POST response with newly created task
+HTTP/1.1 202 Accepted
+Content-Location: http://api.example.net/video/conversion/task/1
+Content-Type: application/json;charset=UTF-8
+Date: Sun, 13 Sep 2009 01:49:27 GMT
+
+# Body
+{ "id": "urn:video:conversion:task:1",
+  "status": "pending",
+  "self": { "href": "http://api.example.net/video/conversion/task/1" },
+  "message": "Your request has been accepted and is being processed.",
+  "ping-after": "2009-09-13T01:49:42Z" }
+
+
+# After a while
+# GET request to check the state of the processing
+GET /video/conversion/task/1 HTTP/1.1
+Host: api.example.net
+
+# No body
+
+
+# GET response with new state of the processing
+HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+
+# Body
+{ "id": "urn:video:conversion:task:1",
+  "status": "pending",
+  "self": { "href": "http://api.example.net/video/conversion/task/1" },
+  "message": "Your request is being processed.",
+  "ping-after": "2009-09-13T01:49:57Z" }
+
+
+# After a while
+# GET request to check the state of the processing
+GET /video/conversion/task/1 HTTP/1.1
+Host: api.example.net
+
+# No body
+
+
+# GET response with the result of the processing
+HTTP/1.1 303 See Other
+Location: http://api.example.net/video/youtube/1
+Content-Location: http://api.example.net/video/youtube/1
+
+# Body
+{ "id": "urn:video:conversion:task:1",
+  "status": "done",
+  "self": { "href": "http://api.example.net/video/conversion/task/1" },
+  "message": "Your request has been successfully processed." }</code></pre>
+				</section>
+
+				<section>
+					<h2>Asynchronous tasks with DELETE</h2>
+					<pre><code># DELETE request to initiate the task
+DELETE /user/1 HTTP/1.1
+Host: api.example.net
+Content-Type: application/json;charset=UTF-8
+
+# No Body
+
+
+# DELETE response with newly created task
+HTTP/1.1 202 Accepted
+Content-Location: http://api.example.net/user/task/1
+Content-Type: application/json;charset=UTF-8
+Date: Sun, 13 Sep 2009 01:49:27 GMT
+
+# Body
+{ "id": "urn:user:task:1",
+  "status": "pending",
+  "self": { "href": "http://api.example.net/user/task/1" },
+  "message": "Your request has been accepted and is being processed.",
+  "ping-after": "2009-09-13T01:49:42Z" }
+
+
+# After a while
+# GET request to check the state of the processing
+GET /user/task/1 HTTP/1.1
+Host: api.example.net
+
+# No body
+
+
+# GET response with new state of the processing
+HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+
+# Body
+{ "id": "urn:user:task:1",
+  "status": "done",
+  "self": { "href": "http://api.example.net/user/task/1" },
+  "message": "Your request has been processed.",
+  "ping-after": "2009-09-13T01:49:57Z" }</code></pre>
+				</section>
+
+				<section>
+					<h2>HTTP Error Code</h2>
+					<table>
+						<thead>
+							<tr>
+								<th>Code</th>
+								<th>Message</th>
+								<th>Description</th>
+							</tr>
+						</thead>
+
+						<tbody>
+							<tr class="fragment">
+								<td><strong>4xx</strong></td>
+								<td><small>Client Inputs Error</small></td>
+								<td><small></small></td>
+							</tr>
+							<tr class="fragment">
+								<td><strong>400</strong></td>
+								<td><small>Bad Request</small></td>
+								<td><small>general code</small></td>
+							</tr>
+							<tr class="fragment">
+								<td><strong>403</strong></td>
+								<td><small>Forbidden</small></td>
+								<td><small>not allowed to access</small></td>
+							</tr>
+							<tr class="fragment">
+								<td><strong>404</strong></td>
+								<td><small>Not Found</small></td>
+								<td><small>resource does not exist (or not allowed to access)</small></td>
+							</tr>
+							<tr class="fragment">
+								<td><strong>405</strong></td>
+								<td><small>Not Allowed</small></td>
+								<td><small>http method not handled</small></td>
+							</tr>
+							<tr class="fragment">
+								<td><strong>5xx</strong></td>
+								<td><small>Server Error</small></td>
+								<td><small></small></td>
+							</tr>
+							<tr class="fragment">
+								<td><strong>500</strong></td>
+								<td><small>Internal Server Error</small></td>
+								<td><small>something somewhere went wrong</small></td>
+							</tr>
+							<tr class="fragment">
+								<td><strong>503</strong></td>
+								<td><small>Service Unavailable</small></td>
+								<td><small>temporary not available (Retry-After)</small></td>
+							</tr>
+						</tbody>
+					</table>
+				</section>
+
+				<section>
+					<h2>How to return errors</h2>
+					<pre><code># HTTP Error Header
+HTTP/1.1 403 Forbidden
+Content-Type: application/json;charset=UTF-8
+Content-Language: en
+Date: Wed, 14 Oct 2009 10:16:54 GMT
+Link: &lt;http&#58;&#47;&#47;api.example.net&#47;user&#47;errors&#47;unauthorized_access.html&gt;;rel="help"
+
+# HTTP body
+{ "message": "User is not authorized to other users profile.",
+  "error-id": "error-access-unauthorized-profile",
+  "rel": { "href": "http://api.example.net/user/2" }
+}</code></pre>
+				</section>
+
+				<section>
+					<h2>How to handle errors in the client</h2>
+					<pre><code>try {
+  response = httpRequest.send("GET ...")
+
+  if (response.code >= 200 &amp;&amp; response.code < 400) {
+    // Success handle the success based on the action
+    ...
+  } else if (response.code == 500) {
+    // Server error
+    // Try to work without a server for a while :)
+    ...
+  } else if (response.code == 503) {
+    // Temporary server error
+    delay = response.header.retry_after
+    wait(delay)
+
+    // Wait delay and then retry
+  } else if (response.code >= 400) {
+    // Error in the input, there should be an implementation error in the client
+    // You could retry, after modifying some parameters or methods
+  }
+} catch (NetworkFailure failure) {
+  // Retry now or with a delay
+  ...
+}</code></pre>
+				</section>
+
+				<section>
+					<h2>Working with links</h2>
+					<ul>
+						<li>Goal: Teach the client to use the RESTful API</li>
+						<li>Side benefit: Stateless communication between client and server</li>
+						<li>Links can be set in content <br/><code><small>{"name": "olivier", "alternate": "http://api.example.net/user/dump/1"}</small></code></li>
+						<li>or in the header (ie. for binary format) <br/><code><small>Link: &lt;http://api.example.net/user/dump/1&gt;;rel=alternate</small></code></li>
+						<li>Can help design permission systems, the server can return which actions are possible on the resource</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Queries</h2>
+					<p>
+						<small><code>GET /events?after=2015-01-01&amp;before=2015-12-31&amp;sortBy=date&amp;limit=10</code></small>
+					</p>
+					<pre><code># GET response HEADER
+HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+Cache-Control: max-age=60
+Content-Language: en
+
+# GET response BODY
+{ "total": 50,
+  "events": [
+    { "title": "...", "date": "...", "link": {
+      "rel": "http://api.example.net/rels/event",
+      "href": "http://api.example.net/event/1",
+    }},
+    ...
+  ],
+  "next": "http://api.example.net/events?after=2015-01-01&amp;before=2015-12-31&amp;sortBy=date&amp;limit=10&amp;start=10",
+  "last": "http://api.example.net/events?after=2015-01-01&amp;before=2015-12-31&amp;sortBy=date&amp;limit=10&amp;start=40"
+}</code></pre>
+				</section>
+
+				<section>
+					<h2>Big Queries</h2>
+					<ul>
+						<li>Size of URI is limited (not by specification, but by implementation)</li>
+						<li>Try to create queries template such as: </br><small><code>- http://api.example.net/events?view=last_month</br>- http://api.example.net/events?view=every-friday</code></small></li>
+						<li>Otherwise use POST, but there will be no caching</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Content negociation</h2>
+					<ul>
+						<li>Accept: specify the desired type<br/><small><code>- Accept: application/json;q=1.0, application/html;q=0.6, */*;q=0.0</code></small></li>
+						<li>Accept-Language: specify the desired language</br><small><code>- Accept-Language: fr;q=1.0, en;q=0.5</code></small></li>
+						<li>Accept-Encoding: specify the desired encoding</br><small><code>- Accept-Encoding: gzip</code></small></li>
+						<li>Can also be specified in the URI (subdomain, parameters, path, etc.)</br><small><code>- http://fr.example.net/article/1</code></small></br>
+							<small><code>- http://api.example.net/article/1?format=json</code></small></li>
+					</ul>
+				</section>
+
+
+				<section>
+					<h2>YES, there a lot more to look at?</h2>
+					<ul>
+						<li>How do you handle authentication?</li>
+						<li>How do you document?</li>
+						<li>How can you improve caching?</li>
+						<li>What is Conditional Request and how to use it to improve performances?</li>
+						<li>How do you implement transactions?</li>
+						<li>Versionning anybody?</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>But... Enough for Today!</h2>
+					<h3>Let's have a chat, any question?</h3>
+					<p>
+						<small>Created by olivier morel</a> / <a href="http://twitter.com/algorithme">@algorithme</a></small>
+					</p>
+
+				</section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
